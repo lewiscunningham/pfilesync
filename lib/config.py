@@ -2,6 +2,10 @@ from dataclasses import dataclass
 from pathlib import Path
 import configparser
 import csv
+from lib import logger
+
+DEFAULT_CONFIG_FILE = 'config/pfilesync.cfg'
+
 #import logging
 
 @dataclass
@@ -15,7 +19,11 @@ class Configuration:
 def import_config_data():
     config = configparser.ConfigParser()
 
-    config.read('config/pfilesync.cfg')
+    if not Path(DEFAULT_CONFIG_FILE).is_file():
+        logger.log_info("Config not found or not readable. Creating default.")
+        create_raw_config()
+
+    config.read(DEFAULT_CONFIG_FILE)
 
     config_file = config['default']['config']
 
@@ -46,7 +54,19 @@ def read_folder_config(config : Configuration):
 
     return result_list
 
-                
+
+def create_raw_config():
+    config = configparser.ConfigParser()
+    config['default'] = {
+                            'config':'./config',
+                            'folder_cfg':'%(config)s/pfilesync_folders.cfg',
+                            'log_level':0,
+                            'log_dir':'config/log',
+                            'log_name':'pfilesync_{dt}.log',
+                        }
+    with open(DEFAULT_CONFIG_FILE, 'w') as configfile:
+        config.write(configfile)
+
 if __name__ == "__main__":
     import_config_data()
     
