@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from logging import exception
 from pathlib import Path
 import configparser
 import csv
@@ -25,19 +26,23 @@ def import_config_data():
 
     config.read(DEFAULT_CONFIG_FILE)
 
-    config_file = config['default']['config']
+    try:
+        config_file = config['default']['config']
 
-    config_path = Path(config_file).absolute()
+        config_path = Path(config_file).absolute()
 
-    config.read(f'{config_file}/pfilesync.cfg')
+        config.read(f'{config_file}/pfilesync.cfg')
 
-    folder_cfg_file = config['default']['folder_cfg']
-    folder_config_path = Path(folder_cfg_file).absolute()
+        folder_cfg_file = config['default']['folder_cfg']
+        folder_config_path = Path(folder_cfg_file).absolute()
 
-    log_level = config['default']['log_level']
-    log_dir = config['default']['log_dir']
-    log_path = Path(log_dir).absolute()
-    log_name = config['default']['log_name']
+        log_level = config['default']['log_level']
+        log_dir = config['default']['log_dir']
+        log_path = Path(log_dir).absolute()
+        log_name = config['default']['log_name']
+    except:
+        logger.log_info("Unable to read the config file: {config_file}/pfilesync.cfg. Remove and/or recreate.")
+
 
     return Configuration(config_location=config_path, 
                          folder_cfg_file=folder_config_path, 
@@ -61,7 +66,7 @@ def create_raw_config():
                             'config':'./config',
                             'folder_cfg':'%(config)s/pfilesync_folders.cfg',
                             'log_level':0,
-                            'log_dir':'config/log',
+                            'log_dir':'log',
                             'log_name':'pfilesync_{dt}.log',
                         }
     with open(DEFAULT_CONFIG_FILE, 'w') as configfile:

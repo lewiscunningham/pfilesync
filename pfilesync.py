@@ -1,7 +1,7 @@
 from lib import config, file_processing, logger
 import logging
 
-def backup():
+def backup(): 
     config_data = config.import_config_data()
 
     log = logger.loginit(config_data)

@@ -30,6 +30,9 @@ def loginit(config_data):
 def log_info(msg):
     logging.info(msg)
 
+def log_debug(msg):
+    logging.debug(msg)
+
     
 def close_log(log):
     x = logging._handlers.copy()
